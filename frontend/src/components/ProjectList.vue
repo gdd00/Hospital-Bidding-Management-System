@@ -1,7 +1,7 @@
 <template>
   <!-- V5.3项目列表 - 时间倒序 + 按钮逻辑改造 -->
   <el-table :data="projects" v-loading="loading" stripe border style="width: 100%">
-    <el-table-column label="主标题" min-width="220">
+    <el-table-column label="主标题" :min-width="isMobile ? 180 : 220">
       <template #default="{ row }">
         <span class="title-link" :class="{ purchased: isPostPurchased(row) }" @click="$emit('open-detail', row)">
           {{ row.main_title }}
@@ -16,9 +16,9 @@
       </template>
     </el-table-column>
 
-    <el-table-column prop="creator_name" label="创建人" width="90" />
+    <el-table-column prop="creator_name" label="创建人" :width="isMobile ? 80 : 90" />
 
-    <el-table-column label="供应商" width="140">
+    <el-table-column label="供应商" :width="isMobile ? 100 : 140">
       <template #default="{ row }">
         <template v-if="row.procurement_data && row.procurement_data.length">
           {{ row.procurement_data.length }}条报价
@@ -27,14 +27,15 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="创建时间" width="170">
+    <el-table-column label="创建时间" :width="isMobile ? 140 : 170">
       <template #default="{ row }">
         {{ formatTime(row.created_at) }}
       </template>
     </el-table-column>
 
-    <el-table-column label="操作" width="260" fixed="right">
+    <el-table-column label="操作" :width="isMobile ? 160 : 260" :fixed="isMobile ? false : 'right'">
       <template #default="{ row }">
+        <div class="action-buttons">
         <!-- 补充采购数据: 需求填报/寻找供应商阶段均可，但已报废不可 -->
         <el-button
           v-if="store.canWriteProcurement && row.status !== '已报废'"
@@ -83,21 +84,37 @@
         >
           确认报废
         </el-button>
+        </div>
       </template>
     </el-table-column>
   </el-table>
 </template>
 
 <script setup>
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { useAppStore } from '../stores/app'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const store = useAppStore()
 const emit = defineEmits(['refresh', 'open-procurement', 'open-purchased', 'open-detail'])
+const isMobile = ref(false)
 
 defineProps({
   projects: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
+})
+
+function updateViewport() {
+  isMobile.value = window.innerWidth <= 768
+}
+
+onMounted(() => {
+  updateViewport()
+  window.addEventListener('resize', updateViewport)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateViewport)
 })
 
 function isPostPurchased(row) {
@@ -140,4 +157,21 @@ async function advanceStatus(project, targetStatus) {
 .title-link.purchased:hover { color: #85ce61; }
 .sub-title { font-size: 12px; color: #909399; margin-top: 2px; }
 .no-data { color: #c0c4cc; }
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-buttons :deep(.el-button) {
+    margin-left: 0;
+    width: 100%;
+  }
+}
 </style>
