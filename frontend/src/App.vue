@@ -3,7 +3,7 @@
   <div class="app-container" v-watermark="store.empId">
 
     <!-- ── 未登录: 显示登录页 ── -->
-    <LoginPage v-if="!store.isLoggedIn" @login-success="onLoginSuccess" />
+    <LoginPage v-if="!store.isLoggedIn" />
 
     <!-- ── 已登录: 主界面 ── -->
     <template v-else>
@@ -125,11 +125,6 @@ onMounted(async () => {
   }
 })
 
-// ── 登录后 ────────────────────────────────────────────────
-async function onLoginSuccess() {
-  await fetchProjects()
-}
-
 async function onLogout() {
   await store.logout()
   projects.value = []
@@ -139,6 +134,12 @@ async function onLogout() {
 // ── 水印同步 ──────────────────────────────────────────────
 watch(() => store.empId, (newId) => {
   if (newId) updateWatermark(newId)
+})
+
+watch(() => store.isLoggedIn, async (loggedIn, wasLoggedIn) => {
+  if (loggedIn && !wasLoggedIn) {
+    await fetchProjects()
+  }
 })
 
 async function fetchProjects() {
