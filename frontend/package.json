@@ -1,0 +1,20 @@
+{
+  "name": "hospital-v5.3-frontend",
+  "private": true,
+  "version": "5.3.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "vue": "^3.5",
+    "element-plus": "^2.9",
+    "pinia": "^3.0",
+    "axios": "^1.9"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.6",
+    "vite": "^6.3"
+  }
+}

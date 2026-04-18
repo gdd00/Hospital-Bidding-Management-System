@@ -1,0 +1,10 @@
+[project]
+name = "hospital-backend"
+version = "0.1.0"
+description = "医院招投标管理系统 V5.3 - 后端服务"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
+    "sqlalchemy>=2.0",
+]
