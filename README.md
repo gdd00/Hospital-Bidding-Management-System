@@ -152,7 +152,7 @@ npm run reset-db
 部署命令：
 
 ```bash
-git clone <your-repo-url> hospital
+git clone https://github.com/gdd00/Hospital-Bidding-Management-System.git hospital
 cd hospital
 
 docker compose up -d --build
