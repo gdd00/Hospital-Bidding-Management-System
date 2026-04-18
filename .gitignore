@@ -8,3 +8,13 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Database (runtime generated)
+hospital.db
+
+# Frontend build output (runtime generated)
+static/
+
+# Frontend dependencies
+frontend/node_modules/
+frontend/dist/

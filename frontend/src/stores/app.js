@@ -1,43 +1,78 @@
-/** 全局状态 - 当前登录用户 & API工具
- *  V5.1引入角色体系, V5.3前端配合角色切换模拟登录
+/** 全局状态 - 登录认证 + 权限检查 + API请求
+ *  V5.3重构: 移除mock切换，改为真正的token登录
+ *  权限从硬编码角色改为读取user.permissions数组
  */
 import { defineStore } from 'pinia'
 import axios from 'axios'
-
-// 预置的模拟用户列表（与init_db.py种子数据一致）
-const MOCK_USERS = [
-  { emp_id: 'EMP001', name: '科长A',  role: '科长级' },
-  { emp_id: 'EMP002', name: '采购牛马B', role: '采购科' },
-  { emp_id: 'EMP003', name: '员工C',  role: '普通员工' },
-]
 
 const api = axios.create({ baseURL: '/api' })
 
 export const useAppStore = defineStore('app', {
   state: () => ({
-    currentUser: null,       // 当前登录用户对象
-    mockUsers: MOCK_USERS,   // 可切换的用户列表
+    token: localStorage.getItem('token') || '',
+    currentUser: null,  // {id, emp_id, name, group_name, permissions}
   }),
 
   getters: {
-    empId:   (s) => s.currentUser?.emp_id ?? '',
-    role:    (s) => s.currentUser?.role ?? '',
-    name:    (s) => s.currentUser?.name ?? '',
-    isChief: (s) => s.currentUser?.role === '科长级',
-    isPurchase: (s) => s.currentUser?.role === '采购科',
+    isLoggedIn: (s) => !!s.token && !!s.currentUser,
+    empId:      (s) => s.currentUser?.emp_id ?? '',
+    name:       (s) => s.currentUser?.name ?? '',
+    groupName:  (s) => s.currentUser?.group_name ?? '',
+    permissions: (s) => s.currentUser?.permissions ?? [],
+
+    // 便捷权限getter
+    canCreateProject:     (s) => s.currentUser?.permissions?.includes('create_project'),
+    canWriteProcurement:  (s) => s.currentUser?.permissions?.includes('write_procurement'),
+    canAdvanceStatus:     (s) => s.currentUser?.permissions?.includes('advance_status'),
+    canAdvanceToSupplier: (s) => s.currentUser?.permissions?.includes('advance_to_supplier'),
+    canViewDashboard:     (s) => s.currentUser?.permissions?.includes('view_dashboard'),
+    canManageAccounts:    (s) => s.currentUser?.permissions?.includes('manage_accounts'),
   },
 
   actions: {
-    /** 切换模拟登录用户 */
-    switchUser(empId) {
-      this.currentUser = this.mockUsers.find(u => u.emp_id === empId) || null
+    /** 登录 */
+    async login(empId, password) {
+      const res = await api.post('/auth/login', { emp_id: empId, password })
+      this.token = res.data.token
+      this.currentUser = res.data.user
+      localStorage.setItem('token', this.token)
+      // 后端已通过Cookie下发token，axios后续请求自动携带
+      return res.data
     },
 
-    /** 带认证Header的API请求 */
+    /** 登出 */
+    async logout() {
+      try {
+        await api.post('/auth/logout', null, this._authConfig())
+      } catch { /* 静默 */ }
+      this.token = ''
+      this.currentUser = null
+      localStorage.removeItem('token')
+    },
+
+    /** 拉取当前用户信息(恢复登录态) */
+    async fetchMe() {
+      if (!this.token) return
+      try {
+        const res = await api.get('/auth/me', this._authConfig())
+        this.currentUser = res.data
+      } catch {
+        // token过期，清除
+        this.token = ''
+        this.currentUser = null
+        localStorage.removeItem('token')
+      }
+    },
+
+    /** 带认证的API请求 */
     async request(method, path, data = null) {
-      const headers = { 'X-Emp-Id': this.empId }
-      const res = await api({ method, url: path, data, headers })
+      const res = await api({ method, url: path, data, ...this._authConfig() })
       return res.data
+    },
+
+    /** 生成认证请求配置 */
+    _authConfig() {
+      return { headers: { Authorization: `Bearer ${this.token}` } }
     },
   },
 })

@@ -8,10 +8,12 @@
     "build": "vite build"
   },
   "dependencies": {
-    "vue": "^3.5",
+    "axios": "^1.9",
+    "echarts": "^6.0.0",
     "element-plus": "^2.9",
     "pinia": "^3.0",
-    "axios": "^1.9"
+    "vue": "^3.5",
+    "vue-echarts": "^8.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.6",

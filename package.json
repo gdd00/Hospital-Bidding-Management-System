@@ -1,0 +1,23 @@
+{
+  "name": "hospital-v5.3",
+  "private": true,
+  "scripts": {
+    "init": "npm run init-backend && npm run init-frontend && npm run init-db",
+    "init-backend": "uv sync",
+    "init-frontend": "cd frontend && npm install --legacy-peer-deps",
+    "init-db": "uv run python init_db.py",
+    "dev": "concurrently \"npm run dev-backend\" \"npm run dev-frontend\"",
+    "dev-backend": "uv run uvicorn main:app --reload --port 8100",
+    "dev-frontend": "cd frontend && npx vite",
+    "backend": "uv run uvicorn main:app --reload --port 8100",
+    "frontend": "cd frontend && npx vite",
+    "reset-db": "uv run python init_db.py",
+    "build": "cd frontend && npx vite build",
+    "deploy": "npm run build && npm run init-db && uv run uvicorn main:app --host 0.0.0.0 --port 8100",
+    "clean": "rimraf hospital.db static frontend/dist frontend/node_modules .venv"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1",
+    "rimraf": "^6.0"
+  }
+}

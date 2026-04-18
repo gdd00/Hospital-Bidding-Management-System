@@ -1,0 +1,17 @@
+services:
+  hospital:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hospital-app
+    environment:
+      HOSPITAL_DB_PATH: /app/data/hospital.db
+    ports:
+      - "8100:8100"
+    volumes:
+      - ./data:/app/data
+    command: >
+      sh -c "mkdir -p /app/data &&
+      if [ ! -f \"$HOSPITAL_DB_PATH\" ]; then uv run python init_db.py; fi &&
+      uv run uvicorn main:app --host 0.0.0.0 --port 8100"
+    restart: unless-stopped

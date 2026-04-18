@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv init *)",
+      "Bash(uv sync *)",
+      "Bash(uv run *)",
+      "Bash(curl -s http://127.0.0.1:8100/docs)",
+      "Bash(curl -s -H \"X-Emp-Id: EMP003\" http://127.0.0.1:8100/api/projects)",
+      "Bash(python -m json.tool)",
+      "Bash(taskkill //F //IM uvicorn.exe)",
+      "Bash(pkill -f uvicorn)",
+      "Bash(npm install *)",
+      "Bash(npx vite *)",
+      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\(f'{len\\(data\\)} projects loaded'\\); print\\(data[0]['main_title']\\)\")",
+      "Bash(curl -s http://127.0.0.1:5173/api/projects -H \"X-Emp-Id: EMP001\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'OK: {len\\(d\\)} projects'\\); print\\(json.dumps\\(d[0],ensure_ascii=False\\)\\)\")",
+      "Bash(node_modules/.bin/vite build *)",
+      "Bash(rm -f hospital.db)",
+      "Bash(python -c \"import os; os.remove\\('hospital.db'\\)\")",
+      "Bash(tasklist)",
+      "Bash(taskkill //F //PID 5236)",
+      "Bash(make init *)",
+      "Bash(taskkill //F //IM python.exe)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://127.0.0.1:8100/api/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"emp_id\":\"EMP001\",\"password\":\"EMP001\"}')",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 11812)",
+      "Bash(curl -s http://localhost:5173/index.html)",
+      "Bash(curl -v http://localhost:5173/)",
+      "Bash(curl -s http://[::1]:5173/)",
+      "Bash(taskkill //F //PID 3684)",
+      "Bash(curl -s http://127.0.0.1:5173/)",
+      "Bash(curl *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'count={len\\(d\\)} first={d[0][\\\\\"main_title\\\\\"]}'\\)\")"
+    ]
+  }
+}
